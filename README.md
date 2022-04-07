@@ -1,4 +1,4 @@
-# Learn Django
+# Learn Django (for beginners)
 
 ## Introduction
 
@@ -104,6 +104,34 @@ myproject
     ├── urls.py
     └── wsgi.py
 ```
+
+## URLs and Views
+
+### 1. URL
+![url academind slide image](https://github.com/Aman0509/learningDjango/blob/main/other/images/urls.png)
+
+Readings:
+- [Techvidvan - Django URLs and URL Mapping](https://techvidvan.com/tutorials/django-urls/)
+- [Offical Django Docs - URL Dispatcher](https://docs.djangoproject.com/en/4.0/topics/http/urls/)
+
+### 2. Views
+![views academind slide image](https://github.com/Aman0509/learningDjango/blob/main/other/images/views-1.png)
+
+![views academind slide image](https://github.com/Aman0509/learningDjango/blob/main/other/images/views-2.png)
+
+![request and response academind slide image](https://github.com/Aman0509/learningDjango/blob/main/other/images/request_and_response.png)
+
+Readings:
+- [The Django Book - Mastering Django: Views](https://djangobook.com/django-tutorials/mastering-django-views/)
+
+### [3. Monthly Challenges Project](https://github.com/Aman0509/learningDjango/blob/main/01-URLs_and_Views/MyChallenges)
+
+In this project, below concepts were covered:
+- Creating Views and URLs
+- Dynamic Path Segments and Captured Values
+- Path (Datatype) Converters
+- Redirects
+- Reverse Function and Named URLs
 
 
 ## FAQs
