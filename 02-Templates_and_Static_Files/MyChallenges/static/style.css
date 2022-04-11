@@ -1,0 +1,12 @@
+/* Consider this as an base css that will be applicable to all app level templates. */
+
+@import url('https://fonts.googleapis.com/css2?family=Rubik&display=swap');
+
+html {
+    font-family: 'Rubik', sans-serif;
+}
+
+body {
+    margin: 0;
+    background-color: #1a1a1a;
+}
