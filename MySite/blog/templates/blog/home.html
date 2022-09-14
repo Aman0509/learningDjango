@@ -1,6 +1,50 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block page_title %}Blog - Home{% endblock page_title %}
+{% block css_files %}
+    <link rel="stylesheet" href="{% static 'blog/home.css' %}">
+{% endblock css_files %}
 
 {% block content %}
-    <h1>Sample Text for Testing Purpose</h1>
+    <header id="main-navigation">
+        <h1>
+            <a href="">Blog</a>
+        </h1>
+        <nav>
+            <a href="">All Posts</a>
+        </nav>
+    </header>
+
+    <section id="welcome">
+        <header>
+            <img src="" alt="">
+            <h2>Aman's Blog</h2>
+        </header>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestias maxime labore hic non similique atque? A doloremque totam saepe dicta porro voluptates. Aliquam, nisi natus hic sint eos rem veniam!</p>
+    </section>
+
+    <section id="latest-posts">
+        <h2>My Latest Thoughts</h2>
+        <ul>
+            <li>
+                <article class="post">
+                    <a href="">
+                        <img src="" alt="">
+                        <div class="post__content">
+                            <h3>Some Text</h3>
+                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eveniet soluta, laboriosam vel fugit obcaecati facilis facere voluptatum temporibus quos architecto blanditiis velit? Laborum autem eveniet labore adipisci harum optio vero.</p>
+                        </div>
+                    </a>
+                </article>
+            </li>
+        </ul>
+    </section>
+
+    <section id="about">
+        <h2>What I do?</h2>
+        <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Doloremque reprehenderit enim neque ullam aperiam ea accusantium placeat fuga eveniet dignissimos. Numquam temporibus natus quisquam? Eaque eius cumque architecto ad porro?</p>
+        <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos placeat cupiditate vel est vero porro quis eligendi illo quod? Minima praesentium cum quae perspiciatis nisi adipisci facere recusandae, omnis ducimus!
+        </p>
+    </section>
 {% endblock content %}
