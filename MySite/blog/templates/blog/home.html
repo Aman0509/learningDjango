@@ -2,18 +2,11 @@
 {% load static %}
 {% block page_title %}Blog - Home{% endblock page_title %}
 {% block css_files %}
+    <link rel="stylesheet" href="{% static 'blog/post.css' %}">
     <link rel="stylesheet" href="{% static 'blog/home.css' %}">
 {% endblock css_files %}
 
 {% block content %}
-    <header id="main-navigation">
-        <h1>
-            <a href="">Blog</a>
-        </h1>
-        <nav>
-            <a href="">All Posts</a>
-        </nav>
-    </header>
 
     <section id="welcome">
         <header>
@@ -26,17 +19,7 @@
     <section id="latest-posts">
         <h2>My Latest Thoughts</h2>
         <ul>
-            <li>
-                <article class="post">
-                    <a href="">
-                        <img src="{% static "blog/images/mountains.jpeg" %}" alt="mountains">
-                        <div class="post__content">
-                            <h3>Some Text</h3>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eveniet soluta, laboriosam vel fugit obcaecati facilis facere voluptatum temporibus quos architecto blanditiis velit? Laborum autem eveniet labore adipisci harum optio vero.</p>
-                        </div>
-                    </a>
-                </article>
-            </li>
+            {% include "blog/includes/post.html" %}
         </ul>
     </section>
 
