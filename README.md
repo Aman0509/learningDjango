@@ -8,7 +8,7 @@ Django is a Python-based web framework which allows you to quickly create web ap
 
 - [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django)
 - [W3Schools](https://www.w3schools.com/django/index.php)
-- [My Notes](https://github.com/Aman0509/learningDjango/blob/main/other/Django.pdf)
+- [My Notes](other/Django.pdf)
 
 ### 1. Installing Django
 
@@ -108,23 +108,23 @@ myproject
 ## URLs and Views
 
 ### 1. URL
-![url academind slide image](https://github.com/Aman0509/learningDjango/blob/main/other/images/urls.png)
+![url academind slide image](other/images/urls.png)
 
 Readings:
 - [Techvidvan - Django URLs and URL Mapping](https://techvidvan.com/tutorials/django-urls/)
 - [Offical Django Docs - URL Dispatcher](https://docs.djangoproject.com/en/4.0/topics/http/urls/)
 
 ### 2. Views
-![views academind slide image](https://github.com/Aman0509/learningDjango/blob/main/other/images/views-1.png)
+![views academind slide image](other/images/urls_and_views/views-1.png)
 
-![views academind slide image](https://github.com/Aman0509/learningDjango/blob/main/other/images/views-2.png)
+![views academind slide image](other/images/urls_and_views/views-2.png)
 
-![request and response academind slide image](https://github.com/Aman0509/learningDjango/blob/main/other/images/request_and_response.png)
+![request and response academind slide image](other/images/urls_and_views/request_and_response.png)
 
 Readings:
 - [The Django Book - Mastering Django: Views](https://djangobook.com/django-tutorials/mastering-django-views/)
 
-### [3. Monthly Challenges Project](https://github.com/Aman0509/learningDjango/blob/main/01-URLs_and_Views/MyChallenges)
+### [3. Monthly Challenges Project](01-URLs_and_Views/MyChallenges/)
 
 In this project, below concepts were covered:
 - Creating Views and URLs
@@ -188,11 +188,11 @@ TEMPLATES = [
 ]
 ```
 
-- Please check the implementation about the template renders here, [views.py](https://github.com/Aman0509/learningDjango/blob/main/02-Templates_and_Static_Files/MyChallenges/challenges/views.py) to know about rendering of templates.
+- Please check the implementation about the template renders here, [views.py](02-Templates_and_Static_Files/MyChallenges/challenges/views.py) to know about rendering of templates.
 
 ### 2. Django Template Language
 
-![DTL academind slide image](https://github.com/Aman0509/learningDjango/blob/main/other/images/dtl.png)
+![DTL academind slide image](other/images/urls_and_views/dtl.png)
 
 ### 3. Filters
 
@@ -208,7 +208,7 @@ You want to limit the work you do in the view and really restrict it to your cor
 Readings:
 - [GeeksforGeeks - Django Template Tags](https://www.geeksforgeeks.org/django-template-tags/)
 
-[for](https://docs.djangoproject.com/en/4.0/ref/templates/builtins/#for) and [url](https://docs.djangoproject.com/en/4.0/ref/templates/builtins/#url) tags usage can be seen here, [index.html](https://github.com/Aman0509/learningDjango/blob/main/02-Templates_and_Static_Files/MyChallenges/challenges/templates/challenges/index.html) and for [if](https://docs.djangoproject.com/en/4.0/ref/templates/builtins/#if), refer [challenge_page.html](https://github.com/Aman0509/learningDjango/blob/main/02-Templates_and_Static_Files/MyChallenges/challenges/templates/challenges/challenge_page.html)
+[for](https://docs.djangoproject.com/en/4.0/ref/templates/builtins/#for) and [url](https://docs.djangoproject.com/en/4.0/ref/templates/builtins/#url) tags usage can be seen here, [index.html](02-Templates_and_Static_Files/MyChallenges/challenges/templates/challenges/index.html) and for [if](https://docs.djangoproject.com/en/4.0/ref/templates/builtins/#if), refer [challenge_page.html](02-Templates_and_Static_Files/MyChallenges/challenges/templates/challenges/challenge_page.html)
 
 ### 5. Template Inheritance
 
@@ -237,7 +237,7 @@ TEMPLATES = [
 Readings:
 - [GeeksforGeeks - extends: Django Template Tags](https://www.geeksforgeeks.org/extends-django-template-tags/)
 
-Check out the [parent template(base.html)](https://github.com/Aman0509/learningDjango/blob/main/02-Templates_and_Static_Files/MyChallenges/templates/base.html) and how [index.html](https://github.com/Aman0509/learningDjango/blob/main/02-Templates_and_Static_Files/MyChallenges/challenges/templates/challenges/index.html) & [challenge_page.html](https://github.com/Aman0509/learningDjango/blob/main/02-Templates_and_Static_Files/MyChallenges/challenges/templates/challenges/challenge_page.html) are extending parent template.
+Check out the [parent template(base.html)](02-Templates_and_Static_Files/MyChallenges/templates/base.html) and how [index.html](02-Templates_and_Static_Files/MyChallenges/challenges/templates/challenges/index.html) & [challenge_page.html](02-Templates_and_Static_Files/MyChallenges/challenges/templates/challenges/challenge_page.html) are extending parent template.
 
 ### 6. Including Partial Template Snippets
 
@@ -245,7 +245,7 @@ When we have HTML snippets which needs to be used by some templates but not all 
 
 An example could be navigation bar. In a big website, there might be few pages which may used same navigation bar.
 
-This can be implement at app level. In our example, we will create a nav bar which will redirect us to the 'challenges' route. Implementation can be see here, [header.html](https://github.com/Aman0509/learningDjango/blob/main/02-Templates_and_Static_Files/MyChallenges/challenges/templates/challenges/includes/header.html) and [challenge_page.html](https://github.com/Aman0509/learningDjango/blob/main/02-Templates_and_Static_Files/MyChallenges/challenges/templates/challenges/challenge_page.html). A directory 'includes'(you can give any other name as well) is created inside 'templates' dir in challenges app and inside that _header.html_ is created.  
+This can be implement at app level. In our example, we will create a nav bar which will redirect us to the 'challenges' route. Implementation can be see here, [header.html](02-Templates_and_Static_Files/MyChallenges/challenges/templates/challenges/includes/header.html) and [challenge_page.html](02-Templates_and_Static_Files/MyChallenges/challenges/templates/challenges/challenge_page.html). A directory 'includes'(you can give any other name as well) is created inside 'templates' dir in challenges app and inside that _header.html_ is created.  
 
 **Notes**
 - The included snippets here will have access to the same variables you have access to in the template where you include them. For example, in challenge_page.html, we have variable 'month' that would also be available in that included template. But for index.html, this variable cannot be accessed.
@@ -309,23 +309,23 @@ you would use
 
 ### 8. 404 Template
 
-Check out the implementation at [views.py](https://github.com/Aman0509/learningDjango/blob/main/02-Templates_and_Static_Files/MyChallenges/challenges/views.py)
+Check out the implementation at [views.py](02-Templates_and_Static_Files/MyChallenges/challenges/views.py)
 
 In our example project, if user hit URL which does not exist, we will get below 404 and not the template created for it. In order to render our 404 template, we need to set ***DEBUG=False*** in _settings.py_, however, with that, Django development web server will not start. Our 404 page can be render when we deploy our application.
 
-![404 academind screenshot](https://github.com/Aman0509/learningDjango/blob/main/other/images/404.png)
+![404 academind screenshot](other/images/urls_and_views/404.png)
 
 
 ### 9. Adding Static Files
 
 Readings:
 - [Official Docs - How to manage static files (e.g. images, JavaScript, CSS)](https://docs.djangoproject.com/en/4.0/howto/static-files/)
-- [LearnDjango - Djang)o Static Files and Templates](https://learndjango.com/tutorials/django-static-files)
+- [LearnDjango - Django Static Files and Templates](https://learndjango.com/tutorials/django-static-files)
 - [Digital Ocean - Working with Django Templates & Static Files](https://www.digitalocean.com/community/tutorials/working-with-django-templates-static-files)
 
-Checkout implementation of static files at app level here, [index.html](https://github.com/Aman0509/learningDjango/blob/main/02-Templates_and_Static_Files/MyChallenges/challenges/templates/challenges/index.html) (css file, [challenges.css](https://github.com/Aman0509/learningDjango/blob/main/02-Templates_and_Static_Files/MyChallenges/challenges/static/challenges/challenges.css) is added at app level at path <app_name>/static/<app_name>/<css_file>)
+Checkout implementation of static files at app level here, [index.html](02-Templates_and_Static_Files/MyChallenges/challenges/templates/challenges/index.html) (css file, [challenges.css](02-Templates_and_Static_Files/MyChallenges/challenges/static/challenges/challenges.css) is added at app level at path <app_name>/static/<app_name>/<css_file>)
 
-Static file implementation at global level can be find here, [base.html](https://github.com/Aman0509/learningDjango/blob/main/02-Templates_and_Static_Files/MyChallenges/templates/base.html). To let Django know about global level static files ensure defining a list of directories (**STATICFILES_DIRS**) in your settings ([settings.py](https://github.com/Aman0509/learningDjango/blob/main/02-Templates_and_Static_Files/MyChallenges/MyChallenges/settings.py)) file where Django will also look for static files.
+Static file implementation at global level can be find here, [base.html](02-Templates_and_Static_Files/MyChallenges/templates/base.html). To let Django know about global level static files ensure defining a list of directories (**STATICFILES_DIRS**) in your settings ([settings.py](02-Templates_and_Static_Files/MyChallenges/MyChallenges/settings.py)) file where Django will also look for static files.
 
 <u>**Building Static URLs Dynamically**</u>
 
@@ -344,7 +344,7 @@ Instead, you can use the "add" filter provided by Django to construct this path 
 {% static "my_path/to/"|add:the_file %}
 ```
 
-### [10. Monthly Challenges Project](https://github.com/Aman0509/learningDjango/blob/main/02-Templates_and_Static_Files/MyChallenges/)
+### [10. Monthly Challenges Project](02-Templates_and_Static_Files/MyChallenges/)
 Sample project from previous module added with all the topics discussed in this module.
 
 ## FAQs
