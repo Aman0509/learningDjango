@@ -1117,6 +1117,129 @@ def index(request):
 
 ### Here's the [book_store](03-Data_and_Models/book_store/) project
 
+## Admin
+
+### 1. Introduction
+
+- Previously, we have seen interaction of database with Django via model and used interactive Django shell to perform many database related operations using Django concepts.
+
+- While this is something we can do but as the site owner it's really not convenient because if your app is running on production server, you would not want to first login to that server, activate the shell and then perform operations.
+
+- The better approach would be to have some graphical interface exposed which can be used for same purpose. We can definitely build something like that, however, Django already provides built in administration user interface to administer your data.
+
+### 2. Logging Data into the Admin Panel
+
+- If you go to the [urls.py](03-Data_and_Models/book_store/book_store/urls.py), you will find **admin/** url. This is where ***Django Administration*** interface is exposed.
+
+- This ***Django Administration*** interface is part of **django.contrib.admin** app and it comes builtin with Django.
+
+- ***Remember, this administration interface is not meant for the end users or visitors of your site but for you as the site owner to administer the contents that makes up your site.***
+
+- Now, to use this administration interface, you need to create a superuser account. For that, run below command:
+
+  ```
+  python3 manage.py createsuperuser
+  Username (leave blank to use 'aman'): aman
+  Email address: test@test.com
+  Password:
+  Password (again):
+  Superuser created successfully.
+  ```
+
+- Once credentials are created, start your local server and go to ```localhost:8000/admin``` and use your credentials to login.
+
+- Once logged in and if you are looking for data related to your model and it is not there then follow the next section for the reason.
+
+### 3. Adding Models to the Admin Area
+
+- To access data related to your models in ***Django Administration*** page, you need to make Django aware about it because not necessarily all your models need to be managed here.
+
+- If some content is user generated and you as an admin might not need to moderate or view it then you might not wanna include it here.
+
+- Therefore, you have to explicitly inform Django about which data should show up here.
+
+- To make Django aware, we need to make some changes in **admin.py**. See code snippet below.
+
+  ```
+  from django.contrib import admin
+  from .models import Book
+
+  # Register your models here.
+
+  admin.site.register(Book)
+  ```
+
+- If now the server is restarted, **Book** model will be appeared.
+
+### 4. Configuring Model Fields
+
+- In above section, we have successfully added our **Book** model to admin UI.
+
+- With that, CRUD operations can be performed easily.
+
+- In our example, with current implementation, if we try to add new book and left slug field empty (because during save, it will automatically populated, so why bother?) then the entry will not be created as slug field is required one. So, how can it be resolved?
+
+- One workaround is to add ```blank=True``` in **SlugField()**. With that, you can save without updating slug field and it will be updated automatically during save.
+
+  ```
+  slug = models.SlugField(default="", null=False, blank=True,db_index=True)
+  ```
+
+- Another workaround is add ```editable=False``` in **SlugField()**. With that, this field will become uneditable in Django admin UI.
+
+  ```
+  slug = models.SlugField(default="", null=False, editable=False ,db_index=True)
+  ```
+
+- However, as the best practice, we may want to show this field as uneditable and have the slug data prefilled. ***But to do that, We have to customize our administration area other than adding more and more arguments here at model level. Remember, arguments on the slug field(or any other field in Django model otherwise) are mostly there to configure the settings for the database.***
+
+### 5. Configuring the Admin Settings
+
+Continuing from where we've left:
+
+- Field's appearance on Django admin UI page can be configured by introducing changes at **admin.py** module level. We can make use of [ModelAdmin](https://docs.djangoproject.com/en/4.1/ref/contrib/admin/#modeladmin-objects) class.
+
+  ```
+  from django.contrib import admin
+  from .models import Book
+
+  # Register your models here.
+
+  class BookAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"slug": ("title",)}
+
+  admin.site.register(Book, BookAdmin)
+  ```
+
+- Above will achieve what we want. However, if there is requirement to make some field uneditable, then [readonly_fields](https://docs.djangoproject.com/en/4.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.readonly_fields) can be used.
+
+Readings:
+- [Django Admin - Official Docs](https://docs.djangoproject.com/en/4.1/ref/contrib/admin/)
+
+### 6. More Config Options
+
+- [list_filter](https://docs.djangoproject.com/en/4.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_filter)
+- [list_display](https://docs.djangoproject.com/en/4.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_display)
+
+Added both in our configuration.
+
+```
+from django.contrib import admin
+from .models import Book
+
+# Register your models here.
+
+class BookAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"slug": ("title",)}
+    list_filter = ("author", "rating",)
+
+admin.site.register(Book, BookAdmin)
+```
+
+**Output**
+
+![config options personal project image](other/images/admin/config_options.png)
+
 ## FAQs
 
 **Q - Is Django a web server and a framework?**\
