@@ -1240,6 +1240,634 @@ admin.site.register(Book, BookAdmin)
 
 ![config options personal project image](other/images/admin/config_options.png)
 
+### Here's the [book_store](03-Data_and_Models/book_store/) project with updated Django Admin UI interface code
+
+## Relationships
+
+### 1. Introduction
+
+- To this point, we have only worked with one model, more specifically, the **Book** model but in real world websites, you will have more than one data entity. For example, we can have **author** as separate data entity (model) although we have a **author** field in **Book** model, however, it is hard coded text.
+
+- We might want to store **author** as separate data entities to ensure that we don't try to add *Max* (author name) to two different books, one time as 'Max' and another time as 'Maximilian' which are actually the same author, but typed differently.
+
+- Therefore, in this module, we will learn about relationships between data entities.
+
+### 2. Understanding Relationship Type
+
+![relationship types academind slide image](other/images/relationships/1_relationships_types.png)
+
+![relationship types academind slide image](other/images/relationships/2_relationships_types.png)
+
+Readings:
+- [Relationship in Django Model - Official Docs](https://docs.djangoproject.com/en/4.1/topics/db/examples/)
+
+### 3. Adding one-to-many Relation & Migrations
+
+- Let's continue with our **Book Store** project and create separate model for **author** field (eventually separate table for **author** in database) and established one to many relationship. In this case, **Author** will be unique and **Book** can be multiple, so **Author** represents *one* and **Book** represents *many*.
+
+  <ins><strong>Model Class for Author</strong></ins>
+
+  ```
+  from django.db import models
+
+  class Author(models.Model):
+      first_name = models.CharField(max_length=100)
+      last_name = models.CharField(max_length=100)
+  ```
+
+- To connect **Author** model with **Book** model, we will add [ForeignKey](https://zerotobyte.com/complete-guide-to-django-foreignkey/#:~:text=What%20is%20ForeignKey%20in%20Django,to%20connect%20data%20using%20ForeignKeys.). With that, instead of directly inserting the **author** data in the field, we point at another database entry in another table and Django will set up that pointer to be stored in the database and manage that connection for us behind the scenes. In our case, we just need to let Django know that we want to connect our **Book** model with **Author** for **author** field. Below is the implementation:
+
+  ```
+  from django.db import models
+  from django.core.validators import MinValueValidator, MaxValueValidator
+
+  class Book(models.Model):
+
+      # Class attributes define schema
+      title = models.CharField(max_length=50)
+      rating = models.IntegerField(
+          validators=[
+              MinValueValidator(1),
+              MaxValueValidator(5)
+          ]
+      )
+      author = models.ForeignKey(Author, on_delete=models.CASCADE)
+      is_bestselling = models.BooleanField(default=False)
+      slug = models.SlugField(default="", null=False, db_index=True)
+  ```
+
+  > ***Side Note:***
+  >
+  > ***To define a relationship between two models, you need to define the ForeignKey field in the model from the Many side of the relationship.  In other words, ForeignKey should be placed in the Child table, referencing the Parent table.***
+
+- Now, we have save those changes in database and for that, we need to run ***makemigrations*** and ***migrate*** commands.
+
+  ```
+  python3 manage.py makemigrations
+  It is impossible to change a nullable field 'author' on book to non-nullable without providing a default. This is because the database needs something to populate existing rows.
+  Please select a fix:
+  1) Provide a one-off default now (will be set on all existing rows with a null value for this column)
+  2) Ignore for now. Existing rows that contain NULL values will have to be handled manually, for example with a RunPython or RunSQL operation.
+  3) Quit and manually define a default value in models.py.
+  Select an option:
+  ```
+
+- While running ***makemigrations***, we get warning here because we are trying to change the **author** field and that too as non-nullable and without default value. It's complaining about that because the old author database column basically has to be thrown away and replaced with the new one as the old author column had string entries. Let's choose the option 3 and correct the code by ```null=True``` in **author** field and run again the ***makemigrations*** command which results in successful result.
+
+  ```
+  python3 manage.py makemigrations
+  Migrations for 'book_outlet':
+  book_outlet/migrations/0004_author_alter_book_author.py
+    - Create model Author
+    - Alter field author on book
+  ```
+
+- With that, if we now run ***migrate*** command, the new issue will be found which is related to the existing **author** field. Since type of the **author** field has been changes but in our database, for the existing entries, **author** field has string value. So, there's a conflict and due to which the error.
+
+  ```
+  python3 manage.py migrate
+  Operations to perform:
+    Apply all migrations: admin, auth, book_outlet, contenttypes, sessions
+  Running migrations:
+    Applying book_outlet.0004_author_alter_book_author...Traceback (most recent call last):
+    File "/Users/aman/Documents/Git_Repos/learningDjango/04-DB_Relationships/book_store/manage.py", line 22, in <module>
+      main()
+    File "/Users/aman/Documents/Git_Repos/learningDjango/04-DB_Relationships/book_store/manage.py", line 18, in main
+      execute_from_command_line(sys.argv)
+    File "/Users/aman/Documents/Git_Repos/learningDjango/.venv/lib/python3.9/site-packages/django/core/management/__init__.py", line 446, in execute_from_command_line
+      utility.execute()
+    File "/Users/aman/Documents/Git_Repos/learningDjango/.venv/lib/python3.9/site-packages/django/core/management/__init__.py", line 440, in execute
+      self.fetch_command(subcommand).run_from_argv(self.argv)
+    File "/Users/aman/Documents/Git_Repos/learningDjango/.venv/lib/python3.9/site-packages/django/core/management/base.py", line 414, in run_from_argv
+      self.execute(*args, **cmd_options)
+    File "/Users/aman/Documents/Git_Repos/learningDjango/.venv/lib/python3.9/site-packages/django/core/management/base.py", line 460, in execute
+      output = self.handle(*args, **options)
+    File "/Users/aman/Documents/Git_Repos/learningDjango/.venv/lib/python3.9/site-packages/django/core/management/base.py", line 98, in wrapped
+      res = handle_func(*args, **kwargs)
+    File "/Users/aman/Documents/Git_Repos/learningDjango/.venv/lib/python3.9/site-packages/django/core/management/commands/migrate.py", line 290, in handle
+      post_migrate_state = executor.migrate(
+    File "/Users/aman/Documents/Git_Repos/learningDjango/.venv/lib/python3.9/site-packages/django/db/migrations/executor.py", line 131, in migrate
+      state = self._migrate_all_forwards(
+    File "/Users/aman/Documents/Git_Repos/learningDjango/.venv/lib/python3.9/site-packages/django/db/migrations/executor.py", line 163, in _migrate_all_forwards
+      state = self.apply_migration(
+    File "/Users/aman/Documents/Git_Repos/learningDjango/.venv/lib/python3.9/site-packages/django/db/migrations/executor.py", line 251, in apply_migration
+      migration_recorded = True
+    File "/Users/aman/Documents/Git_Repos/learningDjango/.venv/lib/python3.9/site-packages/django/db/backends/sqlite3/schema.py", line 37, in __exit__
+      self.connection.check_constraints()
+    File "/Users/aman/Documents/Git_Repos/learningDjango/.venv/lib/python3.9/site-packages/django/db/backends/sqlite3/base.py", line 383, in check_constraints
+      raise IntegrityError(
+  django.db.utils.IntegrityError: The row in table 'book_outlet_book' with primary key '1' has an invalid foreign key: book_outlet_book.author_id contains a value 'J.K. Rowling' that does not have a corresponding value in book_outlet_author.id.
+  ```
+
+- To avoid such type of issues, best practice is to design your model ahead of time, however, since, here we are in learning phase, it is good to be aware about it.
+
+- Now about fixing, we can activate the shell and manually delete all entries from table corresponding **Book** model and then run ***migrate*** command again.
+
+  ```
+  >>> from book_outlet.models import Book
+  >>>
+  >>> Book.objects.all().delete()
+  (5, {'book_outlet.Book': 5})
+  >>>
+  ```
+
+  ```
+  python3 manage.py migrate
+  Operations to perform:
+    Apply all migrations: admin, auth, book_outlet, contenttypes, sessions
+  Running migrations:
+    Applying book_outlet.0004_author_alter_book_author... OK
+  ```
+
+### 4. Working with Relations in Python Code
+
+Let's add some data using our models **Book** and **Author** and for that, we will make use of *Django shell*.
+
+```
+>>> from book_outlet.models import Book, Author
+>>>
+>>> jkr = Author(first_name='J.K.', last_name='Rowling')
+>>> jkr.save()
+>>> Author.objects.all()
+<QuerySet [<Author: Author object (1)>]>
+>>> Author.objects.all()[0].first_name
+'J.K.'
+>>>
+>>> Author.objects.all()[0].first_name
+'J.K.'
+>>> bk1 = Book(title="Harry Potter - The Philospher's Stone", rating=5, author=jkr, is_bestselling=True, slug="")
+>>> bk1.save()
+>>> Book.objects.all()
+<QuerySet [<Book: Harry Potter - The Philospher's Stone (5)>]>
+>>> Book.objects.all()[0].author
+<Author: Author object (1)>
+>>> Book.objects.all()[0].author.first_name
+'J.K.'
+>>> Book.objects.all()[0].author.last_name
+'Rowling'
+>>> Book.objects.all()[0].slug
+'harry-potter-the-philosphers-stone'
+>>>
+```
+
+### 5. Cross Model Queries
+
+In previous section, we discussed about inserting data and verify the relationship between them. Now, we will see how the data of other model can be accessed from another and vice versa.
+
+<ins><strong>From Book model (Many)</strong></ins>
+
+In our case, **Book** model represents *many* in terms of relationship and to get the **author** information which is there in separate table, you can use below syntax:
+
+```
+<model_name_with_one_relationship>__<model_name_field_name>
+```
+
+If you want to further add field lookups with it, you can do it below manner:
+
+```
+<model_name_with_one_relationship>__<model_name_field_name>__<field_lookup>
+```
+
+***Examples***
+
+```
+>>> books_by_rowling = Book.objects.filter(author__last_name="Rowling")
+>>> books_by_rowling
+<QuerySet [<Book: Harry Potter - The Philospher's Stone (5)>]>
+>>>
+>>> books_by_rowling = Book.objects.filter(author__last_name__icontains="Row")
+>>> books_by_rowling
+<QuerySet [<Book: Harry Potter - The Philospher's Stone (5)>]>
+>>>
+```
+
+<ins><strong>From Author model (One)</strong></ins>
+
+In scenario where we want to query from **Author** model to find out all the books related to it, it can be done in 2 ways:
+
+- *By using default attribute which has the below syntax:*
+
+  ```
+  <model_name_with_many_relation_all_in_lowercase>_set
+  ```
+
+  ***Examples***
+
+  ```
+  >>> from book_outlet.models import Book, Author
+  >>>
+  >>> jkr = Author.objects.get(first_name="J.K.")
+  >>> jkr
+  <Author: Author object (1)>
+  >>> jkr.book_set
+  <django.db.models.fields.related_descriptors.create_reverse_many_to_one_manager.<locals>.RelatedManager object at 0x7f8919376910>
+  >>> jkr.book_set.all()
+  <QuerySet [<Book: Harry Potter - The Philospher's Stone (5)>]>
+  >>> jkr.book_set.filter(is_bestselling=True)
+  <QuerySet [<Book: Harry Potter - The Philospher's Stone (5)>]>
+  >>> jkr.book_set.all()[0].slug
+  'harry-potter-the-philosphers-stone'
+  >>>
+  ```
+
+- *By using custom created name for Model class with many relation*. This name is created using the [related_name](https://docs.djangoproject.com/en/4.1/ref/models/fields/#django.db.models.ForeignKey.related_name) argument in *ForeignKey*
+
+> If you’d prefer Django not to create a backwards relation, set related_name to '+' or end it with '+'. For example, this will ensure that the User model won’t have a backwards relation to this model:
+>
+> user = models.ForeignKey(
+>    User,
+>    on_delete=models.CASCADE,
+>   related_name='+',
+> )
+>
+
+Updating Model
+
+```
+from django.db import models
+
+class Book(models.Model):
+
+  # Class attributes define schema
+  title = models.CharField(max_length=50)
+  rating = models.IntegerField(
+      validators=[
+          MinValueValidator(1),
+          MaxValueValidator(5)
+      ]
+  )
+  author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="books" ,null=True)
+  is_bestselling = models.BooleanField(default=False)
+  slug = models.SlugField(default="", null=False, db_index=True)
+```
+
+Next, run ***makemigrations*** and ***migrate*** commands:
+
+```
+python3 manage.py makemigrations
+Migrations for 'book_outlet':
+  book_outlet/migrations/0005_alter_book_author.py
+    - Alter field author on book
+
+python3 manage.py migrate
+Operations to perform:
+  Apply all migrations: admin, auth, book_outlet, contenttypes, sessions
+Running migrations:
+  Applying book_outlet.0005_alter_book_author... OK
+```
+
+Let's test it out:
+
+```
+>>> from book_outlet.models import Book, Author
+>>>
+>>> jkr = Author.objects.get(first_name="J.K.")
+>>> jkr.books.all()
+<QuerySet [<Book: Harry Potter - The Philospher's Stone (5)>]>
+>>> jkr.books.get(is_bestselling=True)
+<Book: Harry Potter - The Philospher's Stone (5)>
+>>> jkr.books.filter(rating__gte=4)
+<QuerySet [<Book: Harry Potter - The Philospher's Stone (5)>]>
+>>>
+```
+
+Readings:
+- [What are related_name used for?](https://stackoverflow.com/questions/2642613/what-is-related-name-used-for)
+
+### 6. Managing Relations in Admin
+
+In this section, let's see how we can perform CRUD operations executed previously in Django Admin UI now.
+
+- Let's register first our **Author** model. See below the updated **admin.py** from **book_outlet** app.
+
+  ```
+  from django.contrib import admin
+  from .models import Book, Author
+
+  # Register your models here.
+
+  class BookAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"slug": ("title",)}
+    list_filter = ("author", "rating",)
+    list_display = ("title", "author")
+
+  admin.site.register(Book, BookAdmin)
+  admin.site.register(Author)
+  ```
+
+- And also update the **Author** model in order to display user friendly name for **author** field.
+
+  ```
+  from django.db import models
+
+  class Author(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
+
+    def __str__(self):
+        return self.full_name()
+  ```
+
+- Go to ```localhost:8000/admin/```, and entries for both **Author** and **Book** like below:
+
+  <ins><strong>Author</strong></ins>
+
+  ![author entry personal project image](other/images/relationships/author_entry.png)
+
+  <ins><strong>Book</strong></ins>
+
+  ![author entry personal project image](other/images/relationships/book_entry.png)
+
+### 7. Adding a one-to-one Relation
+
+- To demonstrate one-to-one relation, we will create **Address** model and linked it with **Author** model.
+
+- [OnetoOneField()](https://docs.djangoproject.com/en/4.1/topics/db/examples/one_to_one/) will be used to define **address** field in **Author** model.
+
+- Logically, it will make more sense to define *OnetoOneField()* in **Author** than to **Address** model. However, in one-to-one relationship, you can define *OnetoOneField()* field in any one of them (but go with one which make more sense logically).
+
+- To ensure backward compatibility during ***makemigrations*** and ***migrate***, we will set ```null=True``` in *address* field.
+
+- For one-to-one relations, ```related_name``` argument can also be used, however, Django will create by default a related name with same as of class (all in lowercase) in which *OnetoOneField()* is used. In this case, *author* related name will be created for reverse query. In case, you don't want to use same name, then you can define ```related_name``` argument.
+
+  ```
+  from django.db import models
+
+  class Address(models.Model):
+    street = models.CharField(max_length=150)
+    city = models.CharField(max_length=50)
+    postal = models.CharField(max_length=6)
+
+  class Author(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    address = models.OneToOneField(Address, on_delete=models.CASCADE, null=True)
+
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
+
+    def __str__(self):
+        return self.full_name()
+  ```
+
+- Let's run ***makemigrations*** and ***migrate*** command.
+
+  ```
+  python3 manage.py makemigrations
+  Migrations for 'book_outlet':
+  book_outlet/migrations/0006_address_author_address.py
+    - Create model Address
+    - Add field address to author
+
+  python3 manage.py migrate
+  Operations to perform:
+    Apply all migrations: admin, auth, book_outlet, contenttypes, sessions
+  Running migrations:
+    Applying book_outlet.0006_address_author_address... OK
+  ```
+
+- Let's add address to our existing fielding.
+
+  ```
+  >>> from book_outlet.models import Author, Address, Book
+  >>>
+  >>> Author.objects.all()
+  <QuerySet [<Author: J.K. Rowling>, <Author: George R.R. Martin>, <Author: Amish Tripathi>, <Author: Chetan Bhagat>, <Author: Ajay K. Pandey>]>
+  >>> Author.objects.all()[0].address
+  >>> addr1 = Address(street="1st Main Street", postal="123456", city="London")
+  >>> addr2 = Address(street="2nd Main Street", postal="789101", city="Mumbai")
+  >>> addr1.save()
+  >>> addr2.save()
+  >>> jkr = Author.objects.get(first_name="J.K.")
+  >>> jkr.address
+  >>> jkr.address = addr1
+  >>> jkr.save()
+  >>> jkr.address
+  <Address: Address object (1)>
+  >>> jkr.address.street
+  '1st Main Street'
+  >>>
+  >>> Address.objects.all()[0].author
+  <Author: J.K. Rowling>
+  >>>
+  >>> Address.objects.all()[0].author.first_name
+  'J.K.'
+  >>> Address.objects.all()[0].author.last_name
+  'Rowling'
+  >>>
+  ```
+
+### 8.One-to-one & Admin Config
+
+- Let's register **Address** model in Django Admin UI interface and start server.
+
+  **admin.py**
+
+  ```
+  from django.contrib import admin
+  from .models import Book, Author, Address
+
+  # Register your models here.
+
+  class BookAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"slug": ("title",)}
+    list_filter = ("author", "rating",)
+    list_display = ("title", "author")
+
+  class AuthorAdmin(admin.ModelAdmin):
+    list_display = ("first_name", "last_name")
+
+  admin.site.register(Book, BookAdmin)
+  admin.site.register(Author, AuthorAdmin)
+  admin.site.register(Address)
+  ```
+
+- Let's also add **\_\_str\_\_()** method to display the more user friendly **Address** model object names.
+
+  ```
+  def __str__(self):
+    return f"{self.street}, {self.city}, {self.postal}"
+  ```
+
+- After logging to *admin* page, everything seems fine expect for the format of **Address** model is showing up.
+
+  ![admin page personal project image](other/images/relationships/admin_page.png)
+
+- To fix this, we will use the Python concept of class within class which is also used by Django for metadata operations. Below is the implementation:
+
+  ```
+  class Address(models.Model):
+    street = models.CharField(max_length=150)
+    city = models.CharField(max_length=50)
+    postal = models.CharField(max_length=6)
+
+    class Meta:
+        verbose_name_plural = "Address Entries"
+
+    def __str__(self):
+        return f"{self.street}, {self.city}, {self.postal}"
+  ```
+
+Readings:
+- [verbose_name_plural](https://docs.djangoproject.com/en/4.1/ref/models/options/#verbose-name-plural)
+- [Model Meta Options](https://docs.djangoproject.com/en/4.1/ref/models/options/#model-meta-options)
+
+### 8. Setting up many to many
+
+- To demonstrate many-to-many relation, we will create **Country** model and linked it with **Book** model. So, basically, we mean, a book can be published in many counteries and a country can publish many books.
+
+- Let's create **Country** model for it.
+
+  ```
+  class Country(models.Model):
+      name = models.CharField(max_length=80)
+      code = models.CharField(max_length=2)
+  ```
+
+- [ManytoManyField()](https://docs.djangoproject.com/en/4.1/topics/db/examples/many_to_many/#many-to-many-relationships) is used to create many to many relation and a field using this can be defined in either of the model going for many-to-many relation, however, this should be define in the model where it makes sence logically. Hence, in our case, define *ManytoManyField()* in **Book** model. Below is the updated **Book** model class.
+
+  ```
+  from django.db import models
+
+  class Book(models.Model):
+
+    # Class attributes define schema
+    title = models.CharField(max_length=50)
+    rating = models.IntegerField(
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(5)
+        ]
+    )
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="books" ,null=True)
+    is_bestselling = models.BooleanField(default=False)
+    published_countries = models.ManyToManyField(Country)
+    slug = models.SlugField(default="", null=False, db_index=True)
+  ```
+
+- In *ManytoManyField()*, **on_delete** argument is not available and that's one of the difference among other two kinds of relations.
+
+- To maintain a many-to-many relationship between two tables in a database, the only way is to have a third table which has references to both of those tables. This table is called a ***through*** table and each entry in this table will connect the source table and the target table. This is exactly what Django does under the hood when you use a ManyToManyField. It creates a through model which is not visible to the ORM user.
+
+- After these changes, run ***makemigrations*** and ***migrate*** command
+
+  ```
+  python3 manage.py makemigrations
+  Migrations for 'book_outlet':
+  book_outlet/migrations/0007_country_alter_address_options_and_more.py
+    - Create model Country
+    - Change Meta options on address
+    - Add field published_countries to book
+
+  python3 manage.py migrate
+  Operations to perform:
+    Apply all migrations: admin, auth, book_outlet, contenttypes, sessions
+  Running migrations:
+    Applying book_outlet.0007_country_alter_address_options_and_more... OK
+  ```
+
+- Let's begin with updating data in models using Django shell.
+
+  ```
+  >>> from book_outlet.models import Book, Author, Address, Country
+  >>>
+  >>> Book.objects.all()
+  <QuerySet [<Book: Harry Potter - The Philospher's Stone (5)>, <Book: Song of Ice and Fire (5)>, <Book: Half Girlfriend (4)>, <Book: The Immortals of Meluha (5)>, <Book: You are the best friend (3)>]>
+  >>>
+  >>> book1 = Book.objects.all()[0]
+  >>> book1.published_countries
+  <django.db.models.fields.related_descriptors.create_forward_many_to_many_manager.<locals>.ManyRelatedManager object at 0x7fcd2129df40>
+  >>>
+  >>> book1.published_countries.all()
+  <QuerySet []>
+  >>>
+  >>> ind = Country(name="India", code="IN")
+  >>> uk = Country(name="United Kingdom", code="UK")
+  >>> ind.save()
+  >>> uk.save()
+  ```
+
+- Above, only **Country** model was updated with data. Now, to link this data with **Book** model, we cannot do like, ```book1.published_countries = uk```. Since *published_countries* is a list of countries which is holding a pointer to a another table. So, this wouldn't make sense because you must not forget that it's a many-to-many relation, hence it's not just one country which is related to this book. So setting this equal would be wrong.
+
+- We will use a method called [add()](https://docs.djangoproject.com/en/4.1/ref/models/relations/#django.db.models.fields.related.RelatedManager.add) to add data in *published_countries*.
+
+  ```
+  >>> book1.published_countries.add(uk)
+  >>> book1.published_countries.all()
+  <QuerySet [<Country: Country object (2)>]>
+  >>> book1.published_countries.filter(code="DE")
+  <QuerySet []>
+  >>> book1.published_countries.filter(code="UK")
+  <QuerySet [<Country: Country object (2)>]>
+  ```
+
+- You can ofcourse query inverse, meaning, query **Country** model to find number of books associated with it. For that, we will make use of default field added by Django. So, in our case, inverse would be if we query from **Country** model, so the field would ```book_set```. It is similar as what we have seen in many-to-one relation. However, if you want to change the name of it, *related_name* argument use for it as we've seen before.
+
+  ```
+  >>> Country.objects.all()
+  <QuerySet [<Country: Country object (1)>, <Country: Country object (2)>]>
+  >>> c1 = Country.objects.all()[0]
+  >>> c1.book_set.all()
+  <QuerySet []>
+  >>> c2 = Country.objects.all()[1]
+  >>> c2.book_set.all()
+  <QuerySet [<Book: Harry Potter - The Philospher's Stone (5)>]>
+  >>>
+  ```
+
+Readings:
+- [The right way to use a ManyToManyField in Django](https://www.sankalpjonna.com/learn-django/the-right-way-to-use-a-manytomanyfield-in-django)
+- [ManyToMany Relationship between two models in Django](https://stackoverflow.com/questions/61566808/manytomany-relationship-between-two-models-in-django)
+
+### 9. Many-to-many in Admin
+
+- Just like before, register **Country** model in **admin.py** and then login to Admin UI. Also, add meta class in **Country** model to fix the naming issue in Django Admin UI for **Country** model.
+
+### 10. Circular Relations and Lazy Relations
+
+- Sometimes, you might have two models that depend on each other - i.e. you end up with a circular relationship. Or you have a model that has a relation with itself. Or you have a model that should have a relation with some built-in model (i.e. built into Django) or a model defined in another application.
+
+- Below, you find examples for all three cases that include Django's solution for these kinds of "problems": Lazy relationships. You can also check out the [official docs](https://docs.djangoproject.com/en/3.2/ref/models/fields/#module-django.db.models.fields.related) in addition.
+
+  - Two models that have a **circular relationship**
+
+    ```
+    class Product(models.Model):
+      # ... other fields ...
+      last_buyer = models.ForeignKey('User')
+
+    class User(models.Model):
+      # ... other fields ...
+      created_products = models.ManyToManyField('Product')
+    ```
+
+    In this example, we have multiple relationships between the same two models. Hence we might need to define them in both models. By using the model name as a string instead of a direct reference, Django is able to resolve such dependencies.
+
+  - Relation with the **same model**
+
+    ```
+    class User(models.Model):
+      # ... other fields ...
+      friends = models.ManyToManyField('self')
+    ```
+
+    The special self keyword (used as a string value) tells Django that it should form a relationship with (other) instances of the same model.
+
+  - Relationships with **other apps** and their models (built-in or custom apps)
+
+    ```
+    class Review(models.Model):
+      # ... other fields ...
+      product = models.ForeignKey('store.Product') # '<appname>.<modelname>'
+    ```
+
+    You can reference models defined in other Django apps (no matter if created by you, via ```python manage.py startapp <appname>``` or if it's a built-in or third-party app) by using the app name and then the name of the model inside the app.
+
+### Here's the [book_store](04-DB_Relationships/book_store/) project with relationship code updated in it
+
 ## FAQs
 
 **Q - Is Django a web server and a framework?**\

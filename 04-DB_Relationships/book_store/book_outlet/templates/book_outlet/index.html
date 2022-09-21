@@ -1,0 +1,21 @@
+{% extends 'book_outlet/base.html' %}
+
+{% block title %}
+    All Books
+{% endblock title %}
+
+{% block content %}
+    <ul>
+        {% for book in books %}
+        <li><a href="{% url 'book-details' book.id %}">{{ book.title }}</a> (Rating: {{ book.rating }}) - By using url method </li>
+        <li><a href="{{ book.get_absolute_url }}">{{ book.title }}</a> (Rating: {{ book.rating }}) - By using get_absolute_url method</li>
+        <li><a href="{% url 'book-detail-slug' book.slug %}">{{ book.title }}</a> (Rating: {{ book.rating }}) - calling book detail page by using slugs</li>
+        <br>
+        {% endfor %}
+    </ul>
+
+    <hr>
+
+    <p>Total Number of Books - {{ tot_num_of_books }}</p>
+    <p>Average Ratings - {{ avg_rating }}, {{ avg_rating.rating__avg }}</p>
+{% endblock content %}
